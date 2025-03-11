@@ -1,4 +1,4 @@
-# Unused Code Tool
+![Unused Code Tool](./Assets/unused-code-tool.png)
 
 Unused Code Tool uses a simple text pattern matching approach to detect unused code. It's not intended to be perfect, just to help find obvious instances of unused code.
 
