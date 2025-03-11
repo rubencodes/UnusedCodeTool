@@ -100,3 +100,23 @@ swift build -c release
 ```
 
 This will output a new binary at `.build/release/unused-code-tool`.
+
+## FAQ
+
+### How does this work?
+
+The Unused Code Tool by default looks at all your Swift files, uses a regular expression to identify declarations (think: variables, functions, protocols, etc), and then searches for non-comment references to those declarations across Swift files, xib files, and nib files.
+
+### The unused-code-tool called out a system protocol function, like `applicationDidBecomeActive`! Why?
+
+The Unused Code Tool is very dumb! If you're not calling that function anywhere in your code, the Unused Code Tool will find it. To ignore one-off weirdness like this, use the [ignore item list](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignore-item-unuseditemignore).
+
+### The unused-code-tool called out a third-party framework! Why?
+
+By default we look at _all_ Swift files in the current directory. To ignore a file or framework, use the [ignore file list](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignore-file-unusedfileignore).
+
+### If the unused-code-tool is so dumb, why should I use it?
+
+It's actually _shockingly_ good at finding unused for being such a simple little tool. I've used it find and delete thousands of lines of unused code in my codebases, but it does require careful combing through to make sure you're not deleting anything important.
+
+**I would never trust it to delete code automatically**, but for alerting me to new possibly unused code, it works great!
