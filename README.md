@@ -43,7 +43,7 @@ and the script will exit with an error.
 
 ## Ignoring Code
 
-There are two ways to ask the Unused Code Tool to ignore code, with different granularities.
+There are two ways to ask the Unused Code Tool to ignore code, with different levels of granularity.
 
 ### Ignore File (`.unusedfileignore`)
 
@@ -72,6 +72,10 @@ When false-positives occur, use the Ignore Item to list patterns to ignore withi
 For example, the above file would ignore the `MyWidget_WidgetBundle` declaration defined at the path `./MyWidget/MyWidget_WidgetBundle.swift`, and also all declarations in `Localization.swift` starting with `ThirdPartyString`.
 
 **Note**: Regex is only supported for the declaration name.
+
+## CI/CD
+
+To assist with codebase upkeep, you can integrate this script as part of your CI/CD. See the [push](https://github.com/rubencodes/UnusedCodeTool/blob/main/.github/workflows/push.yml) workflow in this repository for an example.
 
 ## Building & Running
 
