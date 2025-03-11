@@ -56,10 +56,10 @@ struct UsageAnalyzer {
             let xmlString = content.split(separator: "\n").joined(separator: " ")
 
             // Find class links.
-            let classRegex: Regex = .xibProperty
+            let classRegex: Regex = .xibClass
             let classUsages = xmlString.matches(of: classRegex)
             for classUsage in classUsages {
-                let name = classUsage.output.propertyName
+                let name = classUsage.output.className
 
                 for item in declarations where item.name == name && !item.isPrivate {
                     usages[item] = (usages[item] ?? 0) + 1
