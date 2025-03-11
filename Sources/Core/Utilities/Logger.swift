@@ -2,7 +2,6 @@ import Foundation
 
 /// Writes logs to stdout.
 struct Logger {
-
     // MARK: - Private Properties
 
     private let logLevel: LogLevel

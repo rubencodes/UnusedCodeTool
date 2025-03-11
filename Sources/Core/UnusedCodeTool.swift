@@ -1,11 +1,10 @@
 import Foundation
 
 public final class UnusedCodeTool {
-
     // MARK: - Nested Types
 
     private enum Arguments: String {
-        case directory = "directory"
+        case directory
         case ignoreFilePath = "ignore-file-path"
         case ignoreItemPath = "ignore-item-path"
         case logLevel = "level"
@@ -44,11 +43,11 @@ public final class UnusedCodeTool {
     private let ignoreItemPath: String
     private let logLevel: LogLevel
 
-    lazy private var logger = Logger(logLevel: logLevel)
-    lazy private var fileBrowser = FileBrowser(logger: logger)
-    lazy private var parser = SwiftParser(logger: logger)
-    lazy private var analyzer = UsageAnalyzer(logger: logger)
-    lazy private var reporter = Reporter(logger: logger)
+    private lazy var logger = Logger(logLevel: logLevel)
+    private lazy var fileBrowser = FileBrowser(logger: logger)
+    private lazy var parser = SwiftParser(logger: logger)
+    private lazy var analyzer = UsageAnalyzer(logger: logger)
+    private lazy var reporter = Reporter(logger: logger)
 
     // MARK: - Lifecycle
 
@@ -76,10 +75,10 @@ public final class UnusedCodeTool {
         let xibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "xib", ignoring: ignoreFilePath)
         let nibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "nib", ignoring: ignoreFilePath)
         let unusedDeclarations = analyzer.findUnused(declarations: allDeclarations,
-                                                    in: swiftFilePaths,
-                                                    xibs: xibFilePaths + nibFilePaths,
-                                                    using: fileBrowser,
-                                                    ignoring: ignoreItemPath)
+                                                     in: swiftFilePaths,
+                                                     xibs: xibFilePaths + nibFilePaths,
+                                                     using: fileBrowser,
+                                                     ignoring: ignoreItemPath)
 
         // Output usage report.
         reporter.print(for: unusedDeclarations)

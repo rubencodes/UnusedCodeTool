@@ -2,7 +2,6 @@ import Foundation
 
 /// Finds unused code by running a text-based search for references across files.
 struct UsageAnalyzer {
-
     // MARK: - Private Properties
 
     private let logger: Logger
@@ -27,7 +26,8 @@ struct UsageAnalyzer {
                     in filePaths: [String],
                     xibs: [String],
                     using fileBrowser: FileBrowser,
-                    ignoring ignoreItemPath: String? = nil) -> [Declaration] {
+                    ignoring ignoreItemPath: String? = nil) -> [Declaration]
+    {
         var usages = [Declaration: Int]()
 
         for filePath in filePaths {
@@ -89,8 +89,8 @@ struct UsageAnalyzer {
             }
         }
 
-        declarations.sorted().forEach {
-            logger.debug("[UsageAnalyzer] \($0.file):\($0.at): \($0.type) \($0.name) used \(usages[$0] ?? 0) time(s).")
+        for declaration in declarations.sorted() {
+            logger.debug("[UsageAnalyzer] \(declaration.file):\(declaration.at): \(declaration.type) \(declaration.name) used \(usages[declaration] ?? 0) time(s).")
         }
 
         return filter(declarations: declarations, ignoring: ignoreItemPath, using: fileBrowser)
@@ -101,9 +101,11 @@ struct UsageAnalyzer {
 
     private func filter(declarations: [Declaration],
                         ignoring ignoreItemPath: String?,
-                        using fileBrowser: FileBrowser) -> [Declaration] {
+                        using fileBrowser: FileBrowser) -> [Declaration]
+    {
         guard let ignoreItemPath,
-              let ignoreItem = fileBrowser.readFile(at: ignoreItemPath) else {
+              let ignoreItem = fileBrowser.readFile(at: ignoreItemPath)
+        else {
             logger.debug("[UsageAnalyzer] No ignore file specified, returning all unused items.")
             return declarations
         }
@@ -130,7 +132,7 @@ struct UsageAnalyzer {
 
         var usedIgnoreItems: [IgnoredItem] = .init()
         let nonIgnoredDeclarations = declarations.filter { declaration in
-            return ignoredItems.contains { ignoredItem in
+            ignoredItems.contains { ignoredItem in
                 guard declaration.file == ignoredItem.filePath else {
                     return false
                 }
@@ -149,8 +151,8 @@ struct UsageAnalyzer {
             .filter { !usedIgnoreItems.contains($0) }
         if unusedIgnoreItems.isEmpty == false {
             logger.warning("[UsageAnalyzer] The following ignored items were not found in the code:")
-            unusedIgnoreItems.forEach {
-                logger.warning("\t- \($0.filePath): \($0.pattern)")
+            for unusedIgnoreItem in unusedIgnoreItems {
+                logger.warning("\t- \(unusedIgnoreItem.filePath): \(unusedIgnoreItem.pattern)")
             }
             logger.warning("[UsageAnalyzer] Please practice proper hygiene in your ignore file and remove them posthaste!")
         }

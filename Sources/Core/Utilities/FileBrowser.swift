@@ -2,7 +2,6 @@ import Foundation
 
 /// Handles file system interactions, such as reading files and listing paths.
 struct FileBrowser {
-
     // MARK: - Private Properties
 
     private let logger: Logger
@@ -25,7 +24,8 @@ struct FileBrowser {
     func getFilePaths(in directory: String = ".",
                       matchingExtension fileExtension: String? = nil,
                       ignoring ignoreFilePath: String? = nil,
-                      using fileManager: FileManager = .default) -> [String] {
+                      using fileManager: FileManager = .default) -> [String]
+    {
         guard let enumerator = fileManager.enumerator(atPath: directory) else {
             logger.error("[FileBrowser] Failed to enumerate items in directory \"\(directory)\"")
             exit(1)
@@ -72,7 +72,8 @@ struct FileBrowser {
 
     private func filter(filePaths: [String], ignoring ignoreFilePath: String?) -> [String] {
         guard let ignoreFilePath,
-              let ignoreFile = readFile(at: ignoreFilePath) else {
+              let ignoreFile = readFile(at: ignoreFilePath)
+        else {
             logger.debug("[FileBrowser] No ignore file specified, returning all file paths.")
             return filePaths
         }
@@ -96,7 +97,7 @@ struct FileBrowser {
         }
 
         return filePaths.filter { filePath in
-            return ignoredFilePathRegexes.contains {
+            ignoredFilePathRegexes.contains {
                 guard (try? $0.firstMatch(in: filePath)) != nil else {
                     return false
                 }

@@ -11,10 +11,10 @@ let package = Package(
             name: "unused-code-tool",
             dependencies: ["Core"],
             path: "Sources/Main"
-            ),
+        ),
         .target(
             name: "Core",
             dependencies: []
-            ),
+        ),
     ]
 )

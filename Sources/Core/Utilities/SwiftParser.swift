@@ -2,7 +2,6 @@ import Foundation
 
 /// Extracts declarations from Swift files using basic pattern matching.
 struct SwiftParser {
-
     // MARK: - Private Properties
 
     private let logger: Logger
@@ -50,7 +49,8 @@ struct SwiftParser {
         }
 
         guard let match = regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)),
-              let range = Range(match.range(at: 1), in: line) else {
+              let range = Range(match.range(at: 1), in: line)
+        else {
             return []
         }
 

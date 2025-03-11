@@ -2,7 +2,6 @@ import Foundation
 
 /// Outputs report of unused items.
 struct Reporter {
-
     // MARK: - Private Properties
 
     private let logger: Logger
@@ -19,8 +18,8 @@ struct Reporter {
     func print(for unusedDeclarations: [Declaration]) {
         guard unusedDeclarations.isEmpty else {
             logger.info("[Reporter] Found \(unusedDeclarations.count) unused items:")
-            unusedDeclarations.sorted().forEach {
-                logger.error("\($0.file): \($0.name)")
+            for unusedDeclaration in unusedDeclarations.sorted() {
+                logger.error("\(unusedDeclaration.file): \(unusedDeclaration.name)")
             }
             logger.info("")
             logger.info("[Reporter] If this is a false positive or an exception, please copy/paste the line item above to your unuseditemignore file.")

@@ -2,7 +2,6 @@ import Foundation
 
 /// Represents an ignored item created from the ignore file.
 struct IgnoredItem {
-
     /// The file path to ignore within.
     let filePath: String
 
@@ -16,7 +15,8 @@ struct IgnoredItem {
     /// Throws for a regex parsing failure.
     init?(line: Substring) throws {
         guard line.isEmpty == false,
-              line.hasPrefix("#") == false else {
+              line.hasPrefix("#") == false
+        else {
             return nil
         }
 
