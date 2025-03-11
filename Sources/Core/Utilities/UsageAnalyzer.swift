@@ -109,42 +109,52 @@ struct UsageAnalyzer {
         }
 
         let ignoredItemPaths = ignoreItem.split(separator: "\n")
-        let ignoredItemPathRegexes: [(String, Regex<AnyRegexOutput>)] = ignoredItemPaths
+        let ignoredItems: [IgnoredItem] = ignoredItemPaths
             .compactMap { ignoredItemPath in
-                guard ignoredItemPath.isEmpty == false else { return nil }
-                guard !ignoredItemPath.hasPrefix("#") else { return nil }
+                do {
+                    guard let ignoredItem = try IgnoredItem(line: ignoredItemPath) else {
+                        return nil
+                    }
 
-                let components = ignoredItemPath.split(separator: ": ")
-                guard components.count == 2 else { return nil }
-
-                let filePath = String(components[0])
-                let regexPattern = String(components[1])
-                guard let regex = try? Regex(regexPattern) else {
-                    logger.warning("[UsageAnalyzer] Failed to create ignore item regex from pattern: \"\(regexPattern)\"")
+                    logger.debug("[UsageAnalyzer] Created ignore item regex from pattern: \"\(ignoredItem.pattern)\" in file path \"\(ignoredItem.filePath)\"")
+                    return ignoredItem
+                } catch {
+                    logger.warning("[UsageAnalyzer] Failed to create ignore item regex from: \"\(ignoredItemPath)\"")
                     return nil
                 }
-
-                logger.debug("[UsageAnalyzer] Created ignore item regex from pattern: \"\(regexPattern)\" in file path \"\(filePath)\"")
-                return (filePath, regex)
             }
-        guard ignoredItemPathRegexes.isEmpty == false else {
+        guard ignoredItems.isEmpty == false else {
             logger.debug("[UsageAnalyzer] Empty ignore file, returning all unused items.")
             return declarations
         }
 
-        return declarations.filter { declaration in
-            return ignoredItemPathRegexes.contains { (filePath, regex) in
-                guard declaration.file == filePath else {
+        var usedIgnoreItems: [IgnoredItem] = .init()
+        let nonIgnoredDeclarations = declarations.filter { declaration in
+            return ignoredItems.contains { ignoredItem in
+                guard declaration.file == ignoredItem.filePath else {
                     return false
                 }
 
-                guard (try? regex.firstMatch(in: declaration.name)) != nil else {
+                guard (try? ignoredItem.regex.firstMatch(in: declaration.name)) != nil else {
                     return false
                 }
 
-                logger.debug("[UsageAnalyzer] Skipping decaration \"\(declaration.name)\" at path: \(filePath) due to match in ignore file.")
+                logger.debug("[UsageAnalyzer] Skipping decaration \"\(declaration.name)\" at path: \(ignoredItem.filePath) due to match in ignore file.")
+                usedIgnoreItems.append(ignoredItem)
                 return true
             } == false
         }
+
+        let unusedIgnoreItems: [IgnoredItem] = ignoredItems
+            .filter { !usedIgnoreItems.contains($0) }
+        if unusedIgnoreItems.isEmpty == false {
+            logger.warning("[UsageAnalyzer] The following ignored items were not found in the code:")
+            unusedIgnoreItems.forEach {
+                logger.warning("\t- \($0.filePath): \($0.pattern)")
+            }
+            logger.warning("[UsageAnalyzer] Please practice proper hygiene in your ignore file and remove them posthaste!")
+        }
+
+        return nonIgnoredDeclarations
     }
 }
