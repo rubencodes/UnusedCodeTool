@@ -87,7 +87,7 @@ To build the script locally, execute the following in the command line at the ro
 swift build
 ```
 
-To run the script lcoally:
+To run the script locally:
 
 ```
 swift run unused-code-tool
