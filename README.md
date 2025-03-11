@@ -34,6 +34,8 @@ If no unused code is detected, the tool will silently exit. If unused code is fo
 
 and the script will exit with an error.
 
+The file list output by the script can be directly copy/pasted into your [ignore item file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignore-item-unuseditemignore) to ignore those items in the future.
+
 ## Additional Options
 
 - `--directory` - The directory to run the code search in (defaults to `.`)
