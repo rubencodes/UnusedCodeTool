@@ -42,12 +42,6 @@ struct SwiftParser {
                                      in filePath: String,
                                      ignoringItems ignoredItems: [IgnoredItem]) -> [Declaration]
     {
-        // If the entire file is ignored, return nothing.
-        if ignoredItems.contains(where: { $0.matches(filePath: filePath) && !$0.hasDeclarationFilter }) {
-            logger.debug("[SwiftParser] Skipping file: \(filePath) due to ignore rule.")
-            return []
-        }
-
         let cleanedContent = content.sanitized
         let lines = cleanedContent.components(separatedBy: "\n")
 

@@ -55,8 +55,8 @@ public final class UnusedCodeTool {
     // MARK: - Public Functions
 
     public func run() {
-        let result = run(fileReader: self.fileReader,
-                         fileBrowser: self.fileBrowser)
+        let result = run(fileReader: fileReader,
+                         fileBrowser: fileBrowser)
         exit(Int32(result))
     }
 

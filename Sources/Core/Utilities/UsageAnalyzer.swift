@@ -57,7 +57,7 @@ struct UsageAnalyzer {
             for classUsage in classUsages {
                 let name = classUsage.output.className
 
-                for item in declarations where item.name == name && !item.isPrivate {
+                for item in declarations where item.name == name {
                     usages[item] = (usages[item] ?? 0) + 1
                 }
             }

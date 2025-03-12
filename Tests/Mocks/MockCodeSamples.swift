@@ -5,6 +5,25 @@ extension String {
         """
         protocol Bat {}
 
+        final class Foo: Bat {
+            struct Quz {
+                func baz() {}
+            }
+
+            var bar = "baz"
+
+            init() {
+                Quz().baz()
+                print(bar)
+            }
+        }
+        """
+    }
+
+    static var oneUnusedItemPrivate: String {
+        """
+        protocol Bat {}
+
         private final class Foo: Bat {
             struct Quz {
                 func baz() {}
@@ -93,6 +112,24 @@ extension String {
         """
         # An example unused ignore file.
         \(Substring.ignoreFileLiteralDeclarationRegex)
+        """
+    }
+
+    static var xibFileWithClassReference: String {
+        """
+        <object class="Foo"/>
+        """
+    }
+
+    static var xibFileWithSelectorReference: String {
+        """
+        <object selector="Foo"/>
+        """
+    }
+
+    static var xibFileWithPropertyReference: String {
+        """
+        <object property="Foo"/>
         """
     }
 }
