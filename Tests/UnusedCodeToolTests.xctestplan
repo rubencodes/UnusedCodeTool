@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "495AFDC7-CACF-4D2B-9F3E-175C62252647",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "UnusedCodeToolTests",
+        "name" : "UnusedCodeToolTests"
+      }
+    }
+  ],
+  "version" : 1
+}
