@@ -1,13 +1,18 @@
 import Foundation
 
-struct FileBrowser {
+/// Browses files from disk.
+struct LocalFileBrowser: FileBrowser {
     // MARK: - Private Properties
 
+    private let fileManager: FileManager
     private let logger: Logger
 
     // MARK: - Lifecycle
 
-    init(logger: Logger) {
+    init(using fileManager: FileManager = .default,
+         logger: Logger)
+    {
+        self.fileManager = fileManager
         self.logger = logger
     }
 
@@ -18,50 +23,36 @@ struct FileBrowser {
     ///   - directory: The directory to search. Defaults to the current directory.
     ///   - fileExtension: A file extension to filter by, if any.
     ///   - ignoringItems: A list of items to ignore.
-    ///   - fileManager: The `FileManager` instance to use.
     /// - Returns: A list of matched file paths.
     func getFilePaths(in directory: String = ".",
                       matchingExtension fileExtension: String? = nil,
-                      ignoringItems ignoredItems: [IgnoredItem] = [],
-                      using fileManager: FileManager = .default) -> [String]
+                      ignoringItems ignoredItems: [IgnoredItem] = []) -> [String]
     {
         guard let enumerator = fileManager.enumerator(atPath: directory) else {
-            logger.error("[FileBrowser] Failed to enumerate items in directory \"\(directory)\"")
+            logger.error("[LocalFileBrowser] Failed to enumerate items in directory \"\(directory)\"")
             exit(1)
         }
         let filePaths = enumerator.allObjects.compactMap { $0 as? String }.map { "\(directory)\(directory.hasSuffix("/") ? "" : "/")\($0)" }
-        logger.debug("[FileBrowser] File Path Count - All: \(filePaths.count)")
+        logger.debug("[LocalFileBrowser] File Path Count - All: \(filePaths.count)")
         let filePathsMatchingExtension = filter(filePaths: filePaths, matchingExtension: fileExtension)
-        logger.debug("[FileBrowser] File Path Count - Matching Extension (\(fileExtension ?? "none")): \(filePathsMatchingExtension.count)")
+        logger.debug("[LocalFileBrowser] File Path Count - Matching Extension (\(fileExtension ?? "none")): \(filePathsMatchingExtension.count)")
         let filePathsNotIgnored = filter(filePaths: filePathsMatchingExtension, ignoringItems: ignoredItems)
-        logger.debug("[FileBrowser] File Path Count - Not Ignored: \(filePathsNotIgnored.count)")
+        logger.debug("[LocalFileBrowser] File Path Count - Not Ignored: \(filePathsNotIgnored.count)")
 
         return filePathsNotIgnored
-    }
-
-    /// Reads the contents of the given file path.
-    /// - Parameter filePath: The path to the file to read.
-    /// - Returns: A string with the contents of that file, if any.
-    func readFile(at filePath: String) -> String? {
-        guard let content = try? String(contentsOfFile: filePath, encoding: .utf8) else {
-            logger.debug("[FileBrowser] Failed to read file at path: \(filePath)")
-            return nil
-        }
-
-        return content
     }
 
     // MARK: - Private Functions
 
     private func filter(filePaths: [String], matchingExtension fileExtension: String?) -> [String] {
         guard let fileExtension else {
-            logger.debug("[FileBrowser] No file extension filter specified, returning all file paths.")
+            logger.debug("[LocalFileBrowser] No file extension filter specified, returning all file paths.")
             return filePaths
         }
 
         return filePaths.filter { filePath in
             guard filePath.hasSuffix(".\(fileExtension)") else {
-                logger.debug("[FileBrowser] Skipping file at path: \(filePath) due to non-matching file extension.")
+                logger.debug("[LocalFileBrowser] Skipping file at path: \(filePath) due to non-matching file extension.")
                 return false
             }
 
@@ -75,7 +66,7 @@ struct FileBrowser {
                 return true
             }
 
-            logger.debug("[FileBrowser] Skipping file at \(filePath) due to ignore file line:\n\t- \(matchedIgnoreRule.line)")
+            logger.debug("[LocalFileBrowser] Skipping file at \(filePath) due to ignore file line:\n\t- \(matchedIgnoreRule.line)")
             matchedIgnoreRule.hasFiltered = true
             return false
         }

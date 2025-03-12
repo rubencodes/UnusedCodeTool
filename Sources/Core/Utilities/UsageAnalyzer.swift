@@ -19,17 +19,17 @@ struct UsageAnalyzer {
     ///   - items: A list of parsed code items.
     ///   - filePaths: Paths of all Swift files in the project.
     ///   - xibs: Paths of all XIB files in the project.
-    ///   - fileBrowser: The file browser used to read file contents.
+    ///   - fileReader: The file reader used to read file contents.
     /// - Returns: A list of unused code items.
     func findUnused(declarations: [Declaration],
                     in filePaths: [String],
                     xibs: [String],
-                    using fileBrowser: FileBrowser) -> [Declaration]
+                    using fileReader: FileReader) -> [Declaration]
     {
         var usages = [Declaration: Int]()
 
         for filePath in filePaths {
-            guard let content = fileBrowser.readFile(at: filePath) else {
+            guard let content = fileReader.readFile(at: filePath) else {
                 logger.warning("[UsageAnalyzer] Failed to read contents of file: \(filePath)")
                 continue
             }
@@ -44,7 +44,7 @@ struct UsageAnalyzer {
         }
 
         for filePath in xibs {
-            guard let content = fileBrowser.readFile(at: filePath) else {
+            guard let content = fileReader.readFile(at: filePath) else {
                 logger.warning("[UsageAnalyzer] Failed to read contents of file: \(filePath)")
                 continue
             }

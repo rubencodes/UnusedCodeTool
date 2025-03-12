@@ -81,9 +81,9 @@ extension IgnoredItem: Equatable {
 }
 
 extension [IgnoredItem] {
-    init(from ignoreFilePath: String, using fileBrowser: FileBrowser, logger: Logger) {
-        guard let ignoreFile = fileBrowser.readFile(at: ignoreFilePath) else {
-            logger.debug("[FileBrowser] No ignore file provided.")
+    init(from ignoreFilePath: String, using fileReader: FileReader, logger: Logger) {
+        guard let ignoreFile = fileReader.readFile(at: ignoreFilePath) else {
+            logger.debug("[IgnoredItems] No ignore file provided.")
             self = []
             return
         }
@@ -94,7 +94,7 @@ extension [IgnoredItem] {
                 do {
                     return try IgnoredItem(line: $0)
                 } catch {
-                    logger.warning("[FileBrowser] Failed to create regexes for ignore file line: \"\($0)\"")
+                    logger.warning("[IgnoredItems] Failed to create regexes for ignore file line: \"\($0)\"")
                     return nil
                 }
             }

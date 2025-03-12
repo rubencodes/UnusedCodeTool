@@ -8,7 +8,7 @@ extension Regex {
 
     /// Matches single-line comments, e.g. `// foo bar`
     static var singleLineComment: Regex<Substring> {
-        #/\/\/.*\n/#
+        #/(?:\/\/.*\n|\/\/.*$)/#
     }
 
     /// Matches single-line hash comments, e.g. `# foo bar`
@@ -49,11 +49,11 @@ extension Regex {
     /// Matches regex literals, e.g. `#/(.*)/#`
     static var regexLiterals: Regex<Substring> {
         #/\#\/.*?\/\#/#
-            }
+    }
 
-            /// Matches escaped quotes, e.g. `"foo \"world\""`
-            static var escapedQuotes: Regex<Substring> {
-                #/\\"/#
+    /// Matches escaped quotes, e.g. `"foo \"world\""`
+    static var escapedQuotes: Regex<Substring> {
+        #/\\"/#
     }
 
     /// Matches string literals:

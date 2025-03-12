@@ -38,7 +38,8 @@ public final class UnusedCodeTool {
     private let logLevel: LogLevel
 
     private lazy var logger = Logger(logLevel: logLevel)
-    private lazy var fileBrowser = FileBrowser(logger: logger)
+    private lazy var fileReader = LocalFileReader(logger: logger)
+    private lazy var fileBrowser = LocalFileBrowser(logger: logger)
     private lazy var parser = SwiftParser(logger: logger)
     private lazy var analyzer = UsageAnalyzer(logger: logger)
     private lazy var reporter = Reporter(logger: logger)
@@ -55,7 +56,7 @@ public final class UnusedCodeTool {
 
     public func run() {
         // Create ignored items list.
-        let ignoredItems = [IgnoredItem](from: ignoreFilePath, using: fileBrowser, logger: logger)
+        let ignoredItems = [IgnoredItem](from: ignoreFilePath, using: fileReader, logger: logger)
 
         // Find all Swift files.
         let swiftFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "swift", ignoringItems: ignoredItems)
@@ -67,10 +68,9 @@ public final class UnusedCodeTool {
         }
 
         // Search for declarations within the Swift files.
-        let allDeclarations = swiftFilePaths.compactMap { filePath -> [Declaration] in
-            guard let contents = fileBrowser.readFile(at: filePath) else { return [] }
-            return parser.extractDeclarations(from: contents, in: filePath, ignoringItems: ignoredItems)
-        }.flatMap { $0 }
+        let allDeclarations = parser.extractDeclarations(in: swiftFilePaths,
+                                                         ignoringItems: ignoredItems,
+                                                         using: fileReader)
 
         // Warn if any ignore items are unused:
         let unusedIgnoreItems = ignoredItems.filter { $0.hasFiltered == false }
@@ -86,7 +86,7 @@ public final class UnusedCodeTool {
         let unusedDeclarations = analyzer.findUnused(declarations: allDeclarations,
                                                      in: swiftFilePaths,
                                                      xibs: xibFilePaths + nibFilePaths,
-                                                     using: fileBrowser)
+                                                     using: fileReader)
 
         // Output usage report.
         reporter.print(for: unusedDeclarations)

@@ -17,11 +17,30 @@ struct SwiftParser {
     /// Extracts code items from a Swift file's content.
     /// - Parameters:
     ///   - content: The content of the file.
-    ///   - filePath: The path of the file being analyzed.
+    ///   - filePaths: Paths of all Swift files in the project.
+    ///   - fileReader: The file reader used to read file contents.
     /// - Returns: A list of identified code items.
-    func extractDeclarations(from content: String,
-                             in filePath: String,
-                             ignoringItems ignoredItems: [IgnoredItem]) -> [Declaration]
+    func extractDeclarations(in filePaths: [String],
+                             ignoringItems ignoredItems: [IgnoredItem],
+                             using fileReader: FileReader) -> [Declaration]
+    {
+        filePaths.compactMap { filePath -> [Declaration] in
+            // If the entire file is ignored, return nothing.
+            if ignoredItems.contains(where: { $0.matches(filePath: filePath) && !$0.hasDeclarationFilter }) {
+                logger.debug("[SwiftParser] Skipping file: \(filePath) due to ignore rule.")
+                return []
+            }
+
+            guard let contents = fileReader.readFile(at: filePath) else { return [] }
+            return extractDeclarations(from: contents, in: filePath, ignoringItems: ignoredItems)
+        }.flatMap { $0 }
+    }
+
+    // MARK: - Private Functions
+
+    private func extractDeclarations(from content: String,
+                                     in filePath: String,
+                                     ignoringItems ignoredItems: [IgnoredItem]) -> [Declaration]
     {
         // If the entire file is ignored, return nothing.
         if ignoredItems.contains(where: { $0.matches(filePath: filePath) && !$0.hasDeclarationFilter }) {
@@ -55,8 +74,6 @@ struct SwiftParser {
             return declaration
         }
     }
-
-    // MARK: - Private Functions
 
     private func findModifiers(from line: String, for type: String, in filePath: String) -> [String] {
         guard let regex = try? NSRegularExpression(pattern: "(.*?)\\s*\\b" + type + "\\b") else {
