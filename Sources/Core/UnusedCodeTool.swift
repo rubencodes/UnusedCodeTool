@@ -55,6 +55,15 @@ public final class UnusedCodeTool {
     // MARK: - Public Functions
 
     public func run() {
+        let result = run(fileReader: self.fileReader,
+                         fileBrowser: self.fileBrowser)
+        exit(Int32(result))
+    }
+
+    // MARK: - Internal Functions
+
+    func run(fileReader: FileReader,
+             fileBrowser: FileBrowser) -> Int {
         // Create ignored items list.
         let ignoredItems = [IgnoredItem](from: ignoreFilePath, using: fileReader, logger: logger)
 
@@ -64,7 +73,7 @@ public final class UnusedCodeTool {
         let nibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "nib", ignoringItems: ignoredItems)
         guard swiftFilePaths.isEmpty == false else {
             logger.debug("[System] No Swift files found.")
-            return
+            return 0
         }
 
         // Search for declarations within the Swift files.
@@ -89,6 +98,6 @@ public final class UnusedCodeTool {
                                                      using: fileReader)
 
         // Output usage report.
-        reporter.print(for: unusedDeclarations)
+        return reporter.print(for: unusedDeclarations)
     }
 }

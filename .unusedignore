@@ -21,12 +21,12 @@
 ##################################################################################################
 
 # e.g. This ignores the `.gitignore` file.
-# This is unneeded because non-Swift/xib/nib files are ignored.
+# (This is unneeded because non-Swift/xib/nib files are ignored, but you get the idea.)
 ".gitignore"
 
-# e.g. This ignores the `.github` directory.
-\.github/.*
+# e.g. This ignores the `Tests` directory.
+Tests/.*
 
 # e.g. This ignores all `.pdf` files in the `.build` directory.
-# This is unneeded because non-Swift/xib/nib files are ignored.
+# (This is unneeded because non-Swift/xib/nib files are ignored, but you get the idea.)
 \.build/.*\.pdf

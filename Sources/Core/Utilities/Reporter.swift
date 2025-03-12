@@ -15,7 +15,9 @@ struct Reporter {
     /// Prints a summary of unused code items, if any.
     /// - Parameters:
     ///   - unusedDeclarations: A list of unused code items.
-    func print(for unusedDeclarations: [Declaration]) {
+    /// - Returns:
+    ///   - Count of unused items.
+    func print(for unusedDeclarations: [Declaration]) -> Int {
         guard unusedDeclarations.isEmpty else {
             logger.info("[Reporter] Found \(unusedDeclarations.count) unused items:")
             for unusedDeclaration in unusedDeclarations.sorted() {
@@ -23,11 +25,11 @@ struct Reporter {
             }
             logger.info("")
             logger.info("[Reporter] If this is a false-positive or expected, please copy/paste the line item above to your unused ignore file.")
-            exit(1)
+            return unusedDeclarations.count
         }
 
         // Omitted at default log level, per unix guidelines.
         logger.debug("[Reporter] Found 0 unused items.")
-        exit(0)
+        return unusedDeclarations.count
     }
 }
