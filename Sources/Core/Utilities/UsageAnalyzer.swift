@@ -34,9 +34,7 @@ struct UsageAnalyzer {
                 continue
             }
 
-            let words = content
-                .replacing(Regex<Substring>.singleLineComment, with: "")
-                .replacing(Regex<Substring>.multilineComment, with: "")
+            let words = content.sanitized
                 .components(separatedBy: CharacterSet.validVariableNameCharacters.inverted)
             let wordCount = Dictionary(words.map { ($0, 1) }, uniquingKeysWith: +)
 

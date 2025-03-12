@@ -75,7 +75,7 @@ struct FileBrowser {
                 return true
             }
 
-            logger.debug("[SwiftParser] Skipping file at \(filePath) due to ignore file line:\n\t- \(matchedIgnoreRule.line)")
+            logger.debug("[FileBrowser] Skipping file at \(filePath) due to ignore file line:\n\t- \(matchedIgnoreRule.line)")
             matchedIgnoreRule.hasFiltered = true
             return false
         }

@@ -29,12 +29,11 @@ struct SwiftParser {
             return []
         }
 
-        let cleanedContent = content
-            .replacing(Regex<Any>.multilineComment, with: "")
+        let cleanedContent = content.sanitized
         let lines = cleanedContent.components(separatedBy: "\n")
 
         return lines.enumerated().compactMap { index, line in
-            let cleanedLine = line.replacing(Regex<Any>.singleLineComment, with: "")
+            let cleanedLine = line.trimmingCharacters(in: .whitespaces)
             guard !cleanedLine.isEmpty else { return nil }
 
             guard let match = cleanedLine.firstMatch(of: Regex<Any>.declaration) else { return nil }
