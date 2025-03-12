@@ -6,7 +6,6 @@ public final class UnusedCodeTool {
     private enum Arguments: String {
         case directory
         case ignoreFilePath = "ignore-file-path"
-        case ignoreItemPath = "ignore-item-path"
         case logLevel = "level"
 
         var description: String {
@@ -14,8 +13,6 @@ public final class UnusedCodeTool {
             case .directory:
                 return "The directory to search for unused code."
             case .ignoreFilePath:
-                return "The path to a file containing a line-delimited list of file or directory regex paths to ignore."
-            case .ignoreItemPath:
                 return "The path to a file containing a line-delimited list of items to ignore, in the format FILE_PATH=DECLARATION_NAME_REGEX"
             case .logLevel:
                 return "The log verbosity level (debug, info, warning, error)."
@@ -27,11 +24,9 @@ public final class UnusedCodeTool {
             case .directory:
                 return "."
             case .ignoreFilePath:
-                return ".unusedfileignore"
-            case .ignoreItemPath:
-                return ".unuseditemignore"
+                return ".unusedignore"
             case .logLevel:
-                return "\(LogLevel.info.rawValue)"
+                return "\(LogLevel.default.rawValue)"
             }
         }
     }
@@ -40,7 +35,6 @@ public final class UnusedCodeTool {
 
     private let directory: String
     private let ignoreFilePath: String
-    private let ignoreItemPath: String
     private let logLevel: LogLevel
 
     private lazy var logger = Logger(logLevel: logLevel)
@@ -54,31 +48,45 @@ public final class UnusedCodeTool {
     public init(arguments: [String] = CommandLine.arguments) {
         directory = ArgumentParser.find(Arguments.directory.rawValue, from: arguments) ?? Arguments.directory.defaultValue
         ignoreFilePath = ArgumentParser.find(Arguments.ignoreFilePath.rawValue, from: arguments) ?? Arguments.ignoreFilePath.defaultValue
-        ignoreItemPath = ArgumentParser.find(Arguments.ignoreItemPath.rawValue, from: arguments) ?? Arguments.ignoreItemPath.defaultValue
-        logLevel = LogLevel(rawValue: ArgumentParser.find(Arguments.logLevel.rawValue, from: arguments) ?? Arguments.logLevel.defaultValue) ?? .info
+        logLevel = LogLevel(rawValue: ArgumentParser.find(Arguments.logLevel.rawValue, from: arguments) ?? Arguments.logLevel.defaultValue) ?? .default
     }
 
     // MARK: - Public Functions
 
     public func run() {
+        // Create ignored items list.
+        let ignoredItems = [IgnoredItem](from: ignoreFilePath, using: fileBrowser, logger: logger)
+
         // Find all Swift files.
-        let swiftFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "swift", ignoring: ignoreFilePath)
-        guard swiftFilePaths.isEmpty == false else { return }
+        let swiftFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "swift", ignoringItems: ignoredItems)
+        let xibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "xib", ignoringItems: ignoredItems)
+        let nibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "nib", ignoringItems: ignoredItems)
+        guard swiftFilePaths.isEmpty == false else {
+            logger.debug("[System] No Swift files found.")
+            return
+        }
 
         // Search for declarations within the Swift files.
         let allDeclarations = swiftFilePaths.compactMap { filePath -> [Declaration] in
             guard let contents = fileBrowser.readFile(at: filePath) else { return [] }
-            return parser.extractDeclarations(from: contents, in: filePath)
+            return parser.extractDeclarations(from: contents, in: filePath, ignoringItems: ignoredItems)
         }.flatMap { $0 }
 
+        // Warn if any ignore items are unused:
+        let unusedIgnoreItems = ignoredItems.filter { $0.hasFiltered == false }
+        if unusedIgnoreItems.isEmpty == false {
+            logger.warning("[System] The following ignored items were not found in the code:")
+            for unusedIgnoreItem in unusedIgnoreItems {
+                logger.warning("\t- \(unusedIgnoreItem.line)")
+            }
+            logger.warning("[System] Please practice proper hygiene in your ignore file and remove them posthaste!")
+        }
+
         // Find unused declarations.
-        let xibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "xib", ignoring: ignoreFilePath)
-        let nibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "nib", ignoring: ignoreFilePath)
         let unusedDeclarations = analyzer.findUnused(declarations: allDeclarations,
                                                      in: swiftFilePaths,
                                                      xibs: xibFilePaths + nibFilePaths,
-                                                     using: fileBrowser,
-                                                     ignoring: ignoreItemPath)
+                                                     using: fileBrowser)
 
         // Output usage report.
         reporter.print(for: unusedDeclarations)

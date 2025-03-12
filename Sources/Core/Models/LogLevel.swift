@@ -18,6 +18,8 @@ enum LogLevel: String, Equatable {
         }
     }
 
+    static var `default`: LogLevel { .info }
+
     static func <= (lhs: LogLevel, rhs: LogLevel) -> Bool {
         return lhs.intValue <= rhs.intValue
     }

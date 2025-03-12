@@ -8,7 +8,12 @@ extension Regex {
 
     /// Matches single-line comments, e.g. // foo bar
     static var singleLineComment: Regex<Substring> {
-        #/\s*\/\//#
+        #/\/\/.*/#
+    }
+
+    /// Matches single-line hash comments, e.g. # foo bar
+    static var singleLineHashComment: Regex<Substring> {
+        #/#(?:.*)$/#
     }
 
     /// Matches declarations, e.g. var foo = "bar"

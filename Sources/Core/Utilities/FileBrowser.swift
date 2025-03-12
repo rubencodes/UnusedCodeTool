@@ -1,6 +1,5 @@
 import Foundation
 
-/// Handles file system interactions, such as reading files and listing paths.
 struct FileBrowser {
     // MARK: - Private Properties
 
@@ -18,12 +17,12 @@ struct FileBrowser {
     /// - Parameters:
     ///   - directory: The directory to search. Defaults to the current directory.
     ///   - fileExtension: A file extension to filter by, if any.
-    ///   - ignoreFilePath: A file path to a file with a list of regex file paths to ignore.
+    ///   - ignoringItems: A list of items to ignore.
     ///   - fileManager: The `FileManager` instance to use.
     /// - Returns: A list of matched file paths.
     func getFilePaths(in directory: String = ".",
                       matchingExtension fileExtension: String? = nil,
-                      ignoring ignoreFilePath: String? = nil,
+                      ignoringItems ignoredItems: [IgnoredItem] = [],
                       using fileManager: FileManager = .default) -> [String]
     {
         guard let enumerator = fileManager.enumerator(atPath: directory) else {
@@ -34,7 +33,7 @@ struct FileBrowser {
         logger.debug("[FileBrowser] File Path Count - All: \(filePaths.count)")
         let filePathsMatchingExtension = filter(filePaths: filePaths, matchingExtension: fileExtension)
         logger.debug("[FileBrowser] File Path Count - Matching Extension (\(fileExtension ?? "none")): \(filePathsMatchingExtension.count)")
-        let filePathsNotIgnored = filter(filePaths: filePathsMatchingExtension, ignoring: ignoreFilePath)
+        let filePathsNotIgnored = filter(filePaths: filePathsMatchingExtension, ignoringItems: ignoredItems)
         logger.debug("[FileBrowser] File Path Count - Not Ignored: \(filePathsNotIgnored.count)")
 
         return filePathsNotIgnored
@@ -70,41 +69,15 @@ struct FileBrowser {
         }
     }
 
-    private func filter(filePaths: [String], ignoring ignoreFilePath: String?) -> [String] {
-        guard let ignoreFilePath,
-              let ignoreFile = readFile(at: ignoreFilePath)
-        else {
-            logger.debug("[FileBrowser] No ignore file specified, returning all file paths.")
-            return filePaths
-        }
-
-        let ignoredFilePaths = ignoreFile.split(separator: "\n")
-        let ignoredFilePathRegexes: [Regex<AnyRegexOutput>] = ignoredFilePaths
-            .compactMap { ignoredFilePath in
-                guard ignoredFilePath.isEmpty == false else { return nil }
-                guard !ignoredFilePath.hasPrefix("#") else { return nil }
-                guard let regex = try? Regex(String(ignoredFilePath)) else {
-                    logger.warning("[FileBrowser] Failed to create ignore file regex from pattern: \"\(ignoredFilePath)\"")
-                    return nil
-                }
-
-                logger.debug("[FileBrowser] Created ignore file regex from pattern: \"\(ignoredFilePath)\"")
-                return regex
-            }
-        guard ignoredFilePathRegexes.isEmpty == false else {
-            logger.debug("[FileBrowser] Empty ignore file, returning all file paths.")
-            return filePaths
-        }
-
-        return filePaths.filter { filePath in
-            ignoredFilePathRegexes.contains {
-                guard (try? $0.firstMatch(in: filePath)) != nil else {
-                    return false
-                }
-
-                logger.debug("[FileBrowser] Skipping file at path: \(filePath) due to match in ignore file.")
+    private func filter(filePaths: [String], ignoringItems ignoredItems: [IgnoredItem]) -> [String] {
+        filePaths.filter { filePath in
+            guard let matchedIgnoreRule = ignoredItems.first(where: { $0.matches(filePath: filePath) && !$0.hasDeclarationFilter }) else {
                 return true
-            } == false
+            }
+
+            logger.debug("[SwiftParser] Skipping file at \(filePath) due to ignore file line:\n\t- \(matchedIgnoreRule.line)")
+            matchedIgnoreRule.hasFiltered = true
+            return false
         }
     }
 }

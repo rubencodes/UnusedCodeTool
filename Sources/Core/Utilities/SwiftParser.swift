@@ -19,24 +19,41 @@ struct SwiftParser {
     ///   - content: The content of the file.
     ///   - filePath: The path of the file being analyzed.
     /// - Returns: A list of identified code items.
-    func extractDeclarations(from content: String, in filePath: String) -> [Declaration] {
-        let multilineCommentRegex: Regex = .multilineComment
-        let cleanedContent = content.replacing(multilineCommentRegex, with: "")
+    func extractDeclarations(from content: String,
+                             in filePath: String,
+                             ignoringItems ignoredItems: [IgnoredItem]) -> [Declaration]
+    {
+        // If the entire file is ignored, return nothing.
+        if ignoredItems.contains(where: { $0.matches(filePath: filePath) && !$0.hasDeclarationFilter }) {
+            logger.debug("[SwiftParser] Skipping file: \(filePath) due to ignore rule.")
+            return []
+        }
+
+        let cleanedContent = content
+            .replacing(Regex<Any>.multilineComment, with: "")
         let lines = cleanedContent.components(separatedBy: "\n")
 
         return lines.enumerated().compactMap { index, line in
-            let commentRegex: Regex = .singleLineComment
-            let cleanedLine = line.replacing(commentRegex, with: "")
+            let cleanedLine = line.replacing(Regex<Any>.singleLineComment, with: "")
             guard !cleanedLine.isEmpty else { return nil }
 
-            let declarationRegex: Regex = .declaration
-            guard let match = cleanedLine.firstMatch(of: declarationRegex) else { return nil }
+            guard let match = cleanedLine.firstMatch(of: Regex<Any>.declaration) else { return nil }
 
             let type = String(match.output.variableType)
             let name = String(match.output.variableName)
             let modifiers = findModifiers(from: line, for: type, in: filePath)
-            logger.debug("[SwiftParser] Found \(type) \(name) in file path: \(filePath):\n\(line)\n")
-            return Declaration(file: filePath, line: line, at: index + 1, type: type, name: name, modifiers: modifiers)
+
+            let declaration = Declaration(file: filePath, line: line, at: index + 1, type: type, name: name, modifiers: modifiers)
+
+            // If the declaration is ignored, return nil.
+            if let matchedIgnoreRule = ignoredItems.first(where: { $0.matches(filePath: filePath) && $0.matches(declaration: declaration) }) {
+                logger.debug("[SwiftParser] Skipping declaration \"\(name)\" at \(filePath) due to ignore file line:\n\t- \(matchedIgnoreRule.line)")
+                matchedIgnoreRule.hasFiltered = true
+                return nil
+            }
+
+            logger.debug("[SwiftParser] Found \(type) \(name) in \(filePath).")
+            return declaration
         }
     }
 

@@ -1,8 +1,0 @@
-# Example Unused File Ignore
-# Whitespaces and # Comments are ignored.
-# Items should be in the format: REGEX_PATH_TO_FILE
-
-\.github/.*
-\.build/.*
-\.swiftpm/.*
-.gitignore

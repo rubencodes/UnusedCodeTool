@@ -1,0 +1,32 @@
+# Example Unused File Ignore
+# Whitespaces and # Comments are ignored.
+
+##################################################################################################
+# To ignore a specific declaration in a file, or multiple declarations across one or more files, #
+# use: REGEX_PATH_TO_FILE: REGEX_DECLARATION_NAME                                                #
+##################################################################################################
+
+# e.g. This ignores declarations named `description` within the file `./Sources/Core/UnusedCodeTool.swift`.
+"./Sources/Core/UnusedCodeTool.swift": "description"
+
+# e.g. This ignores declarations named `package` within the file `./Package.swift`.
+"./Package.swift": "package"
+
+# e.g. This ignores declarations ending in `_Previews` within the directory `./Sources`.
+\./Sources/.*: .*_Previews
+
+##################################################################################################
+# To ignore a whole file, directory, or set of files,                                            #
+# use: REGEX_PATH_TO_FILE_OR_DIRECTORY                                                           #
+##################################################################################################
+
+# e.g. This ignores the `.gitignore` file.
+# This is unneeded because non-Swift/xib/nib files are ignored.
+".gitignore"
+
+# e.g. This ignores the `.github` directory.
+\.github/.*
+
+# e.g. This ignores all `.pdf` files in the `.build` directory.
+# This is unneeded because non-Swift/xib/nib files are ignored.
+\.build/.*\.pdf

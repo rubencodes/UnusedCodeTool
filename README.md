@@ -29,51 +29,56 @@ If no unused code is detected, the tool will silently exit. If unused code is fo
 ./Modules/Utilities/Sources/Public/Views/CircularProgressRing/UICircularProgressRing.swift: startProgress
 ./Modules/SharedUI/Sources/Public/Views/CircularProgressRing/UICircularProgressRing.swift: pauseProgress
 
-[Reporter] If this is a false positive or an exception, please copy/paste the line item above to your unuseditemignore file.
+[Reporter] If this is a false-positive or expected, please copy/paste the line item above to your unused ignore file.
 ```
 
 and the script will exit with an error.
 
-The file list output by the script can be directly copy/pasted into your [ignore item file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignore-item-unuseditemignore) to ignore those items in the future.
+The file list output by the script can be directly copy/pasted into your [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unuseditemignore) to ignore those items in the future.
 
 ## Additional Options
 
 - `--directory` - The directory to run the code search in (defaults to `.`)
-- `--ignore-file-path` - The path to the unused file ignore list (defaults to `.unusedfileignore`) (details below)
-- `--ignore-item-path` - The path to the unused item ignore list (defaults to `.unuseditemignore`) (details below)
+- `--ignore-file-path` - The path to the unused file ignore list (defaults to `.unusedignore`) (details below)
 - `--log-level` - The verbosity level for logging (defaults to `info`) (options: `debug`, `info`, `warning`, `error`)
 
-## Ignoring Code
+## Ignoring Folders, Files, and Declarations (`.unusedignore`)
 
-There are two ways to ask the Unused Code Tool to ignore code, with different levels of granularity.
+So you've got a false-positive, or maybe some code you're saving for later? That's cool! Using an Unused Ignore file, there are a few different ways to ask the Unused Code Tool to errors, depending on the granularity you need.
 
-### Ignore File (`.unusedfileignore`)
-
-To ignore a file or directory, use the Ignore File to list patterns to ignore.
+To ignore a file or directory, add a line item with the name or a regular expression to match against.
 
 ```
-# .unusedfileignore
-# File or directory paths to ignore (must be valid regex)
+# .unusedignore
+# File or directory paths to ignore can be specified in the format:
+# FILE_OR_DIRECTORY_PATH_REGEX
 Pods
-Tests/.*
+.*Test.*
+\.gitignore
 ```
 
-For example, the above file would ignore all files within the `Pods` and `Tests` directories.
+For example, the above file would ignore all files within the `Pods` directory, with `Test` in the name, or named `.gitignore`.
 
-### Ignore Item (`.unuseditemignore`)
-
-When false-positives occur, use the Ignore Item to list patterns to ignore within a file.
+Alternatively, you can also ignore individual declarations within a file:
 
 ```
-# .unuseditemignore
-# Declarations to ignore; format is FILE_PATH: DECLARATION_NAME_REGEX
-./MyWidget/MyWidget_WidgetBundle.swift: MyWidget_WidgetBundle
-./Localization.swift: ThirdPartyString.*
+# .unusedignore
+# Declarations to ignore can be specified in the format:
+# FILE_PATH: DECLARATION_NAME_REGEX
+MyWidget/MyWidget_WidgetBundle\.swift: MyWidget_WidgetBundle
+.*/Localization\.swift: ThirdPartyString.*
 ```
 
-For example, the above file would ignore the `MyWidget_WidgetBundle` declaration defined at the path `./MyWidget/MyWidget_WidgetBundle.swift`, and also all declarations in `Localization.swift` starting with `ThirdPartyString`.
+For example, the above file would ignore the `MyWidget_WidgetBundle` declaration defined in the file `MyWidget/MyWidget_WidgetBundle.swift`, and also all declarations starting with `ThirdPartyString` in all files named `Localization.swift`.
 
-**Note**: Regex is only supported for the declaration name.
+Note: Items listed in this file must be valid regex. To use a literal path definition, surround the item in quotation marks:
+
+```
+# .unusedignore
+# Example without regex:
+"MyWidget/MyWidget_WidgetBundle.swift": "MyWidget_WidgetBundle"
+.*/Localization\.swift: ThirdPartyString.*
+```
 
 ## CI/CD
 
@@ -109,11 +114,11 @@ The Unused Code Tool by default looks at all your Swift files, uses a regular ex
 
 ### The unused-code-tool called out a system protocol function, like `applicationDidBecomeActive`! Why?
 
-The Unused Code Tool is very dumb! If you're not calling that function anywhere in your code, the Unused Code Tool will find it. To ignore one-off weirdness like this, use the [ignore item list](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignore-item-unuseditemignore).
+The Unused Code Tool is very dumb! If you're not calling that function anywhere in your code, the Unused Code Tool will find it. To ignore one-off weirdness like this, use an [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unuseditemignore).
 
 ### The unused-code-tool called out a third-party framework! Why?
 
-By default we look at _all_ Swift files in the current directory. To ignore a file or framework, use the [ignore file list](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignore-file-unusedfileignore).
+By default we look at _all_ Swift files in the current directory. To ignore a file or framework, use an [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unuseditemignore).
 
 ### If the unused-code-tool is so dumb, why should I use it?
 

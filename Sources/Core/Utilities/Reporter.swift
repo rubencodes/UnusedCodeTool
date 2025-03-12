@@ -22,7 +22,7 @@ struct Reporter {
                 logger.error("\(unusedDeclaration.file): \(unusedDeclaration.name)")
             }
             logger.info("")
-            logger.info("[Reporter] If this is a false positive or an exception, please copy/paste the line item above to your unuseditemignore file.")
+            logger.info("[Reporter] If this is a false-positive or expected, please copy/paste the line item above to your unused ignore file.")
             exit(1)
         }
 
