@@ -34,7 +34,7 @@ If no unused code is detected, the tool will silently exit. If unused code is fo
 
 and the script will exit with an error.
 
-The file list output by the script can be directly copy/pasted into your [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unuseditemignore) to ignore those items in the future.
+The file list output by the script can be directly copy/pasted into your [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unusedignore) to ignore those items in the future.
 
 ## Additional Options
 
@@ -114,11 +114,11 @@ The Unused Code Tool by default looks at all your Swift files, uses a regular ex
 
 ### The unused-code-tool called out a system protocol function, like `applicationDidBecomeActive`! Why?
 
-The Unused Code Tool is very dumb! If you're not calling that function anywhere in your code, the Unused Code Tool will find it. To ignore one-off weirdness like this, use an [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unuseditemignore).
+The Unused Code Tool is very dumb! If you're not calling that function anywhere in your code, the Unused Code Tool will find it. To ignore one-off weirdness like this, use an [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unusedignore).
 
 ### The unused-code-tool called out a third-party framework! Why?
 
-By default we look at _all_ Swift files in the current directory. To ignore a file or framework, use an [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unuseditemignore).
+By default we look at _all_ Swift files in the current directory. To ignore a file or framework, use an [unused ignore file](https://github.com/rubencodes/UnusedCodeTool?tab=readme-ov-file#ignoring-folders-files-and-declarations-unusedignore).
 
 ### If the unused-code-tool is so dumb, why should I use it?
 
