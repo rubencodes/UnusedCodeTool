@@ -6,6 +6,9 @@ import PackageDescription
 let package = Package(
     name: "UnusedCodeTool",
     platforms: [.macOS(.v13)],
+    dependencies: [
+        .package(url: "https://github.com/swiftlang/swift-testing.git", branch: "main"),
+    ],
     targets: [
         .executableTarget(
             name: "unused-code-tool",
@@ -18,7 +21,10 @@ let package = Package(
         ),
         .testTarget(
             name: "UnusedCodeToolTests",
-            dependencies: ["Core"],
+            dependencies: [
+                "Core",
+                .product(name: "Testing", package: "swift-testing"),
+            ],
             path: "Tests"
         ),
     ]
