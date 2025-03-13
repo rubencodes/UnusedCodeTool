@@ -25,7 +25,7 @@ struct LocalFileBrowser: FileBrowser {
     ///   - ignoringItems: A list of items to ignore.
     /// - Returns: A list of matched file paths.
     func getFilePaths(in directory: String = ".",
-                      matchingExtension fileExtension: String? = nil,
+                      matchingExtension fileExtension: String,
                       ignoringItems ignoredItems: [IgnoredItem] = []) throws -> [String]
     {
         guard let rawFilePaths = fileManager.files(atPath: directory) else {
@@ -35,7 +35,7 @@ struct LocalFileBrowser: FileBrowser {
         let filePaths = rawFilePaths.map { "\(directory)\(directory.hasSuffix("/") ? "" : "/")\($0)" }
         logger.debug("[LocalFileBrowser] File Path Count - All: \(filePaths.count)")
         let filePathsMatchingExtension = filter(filePaths: filePaths, matchingExtension: fileExtension)
-        logger.debug("[LocalFileBrowser] File Path Count - Matching Extension (\(fileExtension ?? "none")): \(filePathsMatchingExtension.count)")
+        logger.debug("[LocalFileBrowser] File Path Count - Matching Extension (\(fileExtension)): \(filePathsMatchingExtension.count)")
         let filePathsNotIgnored = filter(filePaths: filePathsMatchingExtension, ignoringItems: ignoredItems)
         logger.debug("[LocalFileBrowser] File Path Count - Not Ignored: \(filePathsNotIgnored.count)")
 

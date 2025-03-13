@@ -81,13 +81,7 @@ extension IgnoredItem: Equatable {
 }
 
 extension [IgnoredItem] {
-    init(from ignoreFilePath: String, using fileReader: FileReader, logger: Logger) {
-        guard let ignoreFile = fileReader.readFile(at: ignoreFilePath) else {
-            logger.debug("[IgnoredItems] No ignore file provided.")
-            self = []
-            return
-        }
-
+    init(from ignoreFile: String, logger: Logger) {
         self = ignoreFile
             .split(separator: "\n")
             .compactMap {

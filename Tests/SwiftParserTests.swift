@@ -14,6 +14,30 @@ struct SwiftParserTests {
         let declarations = parser.extractDeclarations(in: files,
                                                       ignoringItems: [])
         #expect(declarations.count == 5)
+
+        let protocolBat = declarations.contains(where: {
+            $0.name == "Bat" && $0.type == "protocol"
+        })
+        #expect(protocolBat)
+
+        let classFoo = declarations.contains(where: {
+            $0.name == "Foo" && $0.type == "class" && $0.modifiers.contains("final")
+        })
+        #expect(classFoo)
+
+        let structQuz = declarations.contains(where: {
+            $0.name == "Quz" && $0.type == "struct"
+        })
+        #expect(structQuz)
+
+        let varBar = declarations.contains(where: {
+            $0.name == "bar" && $0.type == "var"
+        })
+        #expect(varBar)
+
+        let funcBaz = declarations.contains(where: {
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+        #expect(funcBaz)
     }
 
     /// We should ignore literal files in the ignore list.
@@ -50,6 +74,25 @@ struct SwiftParserTests {
         let declarations = parser.extractDeclarations(in: files,
                                                       ignoringItems: [ignoredItem].compactMap { $0 })
         #expect(declarations.count == 4)
+
+        let protocolBat = declarations.contains(where: {
+            $0.name == "Bat" && $0.type == "protocol"
+        })
+        #expect(protocolBat)
+
+        let structQuz = declarations.contains(where: {
+            $0.name == "Quz" && $0.type == "struct"
+        })
+        #expect(structQuz)
+
+        let varBar = declarations.contains(where: {
+            $0.name == "bar" && $0.type == "var"
+        })
+        #expect(varBar)
+
+        let funcBaz = declarations.contains(where: {
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+        #expect(funcBaz)
     }
 
     /// We should ignore regex-matched declarations in the ignore list.
@@ -62,6 +105,25 @@ struct SwiftParserTests {
         let declarations = parser.extractDeclarations(in: files,
                                                       ignoringItems: [ignoredItem].compactMap { $0 })
         #expect(declarations.count == 4)
+
+        let protocolBat = declarations.contains(where: {
+            $0.name == "Bat" && $0.type == "protocol"
+        })
+        #expect(protocolBat)
+
+        let structQuz = declarations.contains(where: {
+            $0.name == "Quz" && $0.type == "struct"
+        })
+        #expect(structQuz)
+
+        let varBar = declarations.contains(where: {
+            $0.name == "bar" && $0.type == "var"
+        })
+        #expect(varBar)
+
+        let funcBaz = declarations.contains(where: {
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+        #expect(funcBaz)
     }
 
     /// We should ignore regex-matched files and declarations in the ignore list.
@@ -74,5 +136,61 @@ struct SwiftParserTests {
         let declarations = parser.extractDeclarations(in: files,
                                                       ignoringItems: [ignoredItem].compactMap { $0 })
         #expect(declarations.count == 4)
+
+        let protocolBat = declarations.contains(where: {
+            $0.name == "Bat" && $0.type == "protocol"
+        })
+        #expect(protocolBat)
+
+        let structQuz = declarations.contains(where: {
+            $0.name == "Quz" && $0.type == "struct"
+        })
+        #expect(structQuz)
+
+        let varBar = declarations.contains(where: {
+            $0.name == "bar" && $0.type == "var"
+        })
+        #expect(varBar)
+
+        let funcBaz = declarations.contains(where: {
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+        #expect(funcBaz)
+    }
+
+    /// We should ignore regex-matched files and declarations in the ignore list.
+    @Test func testParserFindsDeclarationsOK() async throws {
+        let files: [File] = [
+            .init(path: "foo.swift", content: .oneUnusedItemWithPrivateIBOutlet),
+        ]
+        let parser = SwiftParser(logger: logger)
+        let declarations = parser.extractDeclarations(in: files,
+                                                      ignoringItems: [])
+        #expect(declarations.count == 5)
+
+        print(declarations)
+
+        let protocolBat = declarations.contains(where: {
+            $0.name == "Bat" && $0.type == "protocol"
+        })
+        #expect(protocolBat)
+
+        let classFoo = declarations.contains(where: {
+            $0.name == "Foo" && $0.type == "class" && $0.modifiers.contains("final")
+        })
+        #expect(classFoo)
+
+        let structQuz = declarations.contains(where: {
+            $0.name == "Quz" && $0.type == "struct"
+        })
+        #expect(structQuz)
+
+        let varBar = declarations.contains(where: {
+            $0.name == "bar" && $0.type == "var"
+        })
+        #expect(varBar)
+
+        let funcBaz = declarations.contains(where: {
+            $0.name == "baz" && $0.type == "func" && $0.isIBLinked })
+        #expect(funcBaz)
     }
 }

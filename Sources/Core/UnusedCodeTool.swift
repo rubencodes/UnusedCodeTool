@@ -3,10 +3,11 @@ import Foundation
 public final class UnusedCodeTool {
     // MARK: - Nested Types
 
-    private enum Arguments: String {
+    private enum Arguments: String, CaseIterable {
         case directory
         case ignoreFilePath = "ignore-file-path"
         case logLevel = "level"
+        case help
 
         var description: String {
             switch self {
@@ -16,6 +17,8 @@ public final class UnusedCodeTool {
                 return "The path to a file containing a line-delimited list of items to ignore, in the format FILE_PATH=DECLARATION_NAME_REGEX"
             case .logLevel:
                 return "The log verbosity level (debug, info, warning, error)."
+            case .help:
+                return "Show this help message."
             }
         }
 
@@ -26,7 +29,9 @@ public final class UnusedCodeTool {
             case .ignoreFilePath:
                 return ".unusedignore"
             case .logLevel:
-                return "\(LogLevel.default.rawValue)"
+                return LogLevel.default.rawValue
+            case .help:
+                return ""
             }
         }
     }
@@ -36,6 +41,7 @@ public final class UnusedCodeTool {
     private let directory: String
     private let ignoreFilePath: String
     private let logLevel: LogLevel
+    private let isHelpRequested: Bool
 
     private lazy var logger = Logger(logLevel: logLevel)
     private lazy var fileReader = LocalFileReader(logger: logger)
@@ -49,7 +55,13 @@ public final class UnusedCodeTool {
     public init(arguments: [String] = CommandLine.arguments) {
         directory = ArgumentParser.find(Arguments.directory.rawValue, from: arguments) ?? Arguments.directory.defaultValue
         ignoreFilePath = ArgumentParser.find(Arguments.ignoreFilePath.rawValue, from: arguments) ?? Arguments.ignoreFilePath.defaultValue
-        logLevel = LogLevel(rawValue: ArgumentParser.find(Arguments.logLevel.rawValue, from: arguments) ?? Arguments.logLevel.defaultValue) ?? .default
+        logLevel = if let rawValue = ArgumentParser.find(Arguments.logLevel.rawValue, from: arguments),
+                      let logLevel = LogLevel(rawValue: rawValue) {
+            logLevel
+        } else {
+            .default
+        }
+        isHelpRequested = ArgumentParser.find(Arguments.help.rawValue, from: arguments) != nil
     }
 
     // MARK: - Public Functions
@@ -65,15 +77,30 @@ public final class UnusedCodeTool {
     func run(fileReader: FileReader,
              fileBrowser: FileBrowser) -> Int
     {
+        guard isHelpRequested == false else {
+            logger.info("""
+            unused-code-tool
+            
+            Options:
+            
+            \(Arguments.allCases.map {
+                "\t--\($0.rawValue) - \($0.description)\n"
+            }.joined(separator: "\n"))
+            """)
+
+            return 0
+        }
+
         // Create ignored items list.
-        let ignoredItems = [IgnoredItem](from: ignoreFilePath, using: fileReader, logger: logger)
+        let ignoreFile = fileReader.readFile(at: ignoreFilePath) ?? ""
+        let ignoredItems = [IgnoredItem](from: ignoreFile, logger: logger)
 
         // Find all Swift files.
         guard let swiftFilePaths = try? fileBrowser.getFilePaths(in: directory, matchingExtension: "swift", ignoringItems: ignoredItems),
               let xibFilePaths = try? fileBrowser.getFilePaths(in: directory, matchingExtension: "xib", ignoringItems: ignoredItems),
               let nibFilePaths = try? fileBrowser.getFilePaths(in: directory, matchingExtension: "nib", ignoringItems: ignoredItems)
         else {
-            exit(1)
+            return 1
         }
 
         guard swiftFilePaths.isEmpty == false else {

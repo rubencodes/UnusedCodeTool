@@ -76,4 +76,17 @@ struct IgnoredItemTests {
         #expect(item1 != nil)
         #expect(item1 == item2)
     }
+
+    /// Creates unused ignore item array from file content.
+    @Test func testIgnoredItems() async throws {
+        let logger = Logger(logLevel: .default)
+        let empty = [IgnoredItem](from: "", logger: logger)
+        #expect(empty == [])
+        let invalid = [IgnoredItem](from: "\n\\: .*", logger: logger)
+        #expect(invalid.first == nil)
+        let item = [IgnoredItem](from: .unusedIgnoreFile, logger: logger)
+        #expect(item.count == 1)
+        let items = [IgnoredItem](from: .unusedIgnoreFileTwoItems, logger: logger)
+        #expect(items.count == 2)
+    }
 }

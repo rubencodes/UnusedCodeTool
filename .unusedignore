@@ -6,11 +6,8 @@
 # use: REGEX_PATH_TO_FILE: REGEX_DECLARATION_NAME                                                #
 ##################################################################################################
 
-# e.g. This ignores declarations named `description` within the file `./Sources/Core/UnusedCodeTool.swift`.
-"./Sources/Core/UnusedCodeTool.swift": "description"
-
 # e.g. This ignores declarations named `package` within the file `./Package.swift`.
-"./Package.swift": "package"
+"Package.swift": "package"
 
 # e.g. This ignores declarations ending in `_Previews` within the directory `./Sources`.
 \./Sources/.*: .*_Previews
@@ -27,6 +24,5 @@
 # e.g. This ignores the `Tests` directory.
 Tests/.*
 
-# e.g. This ignores all `.pdf` files in the `.build` directory.
-# (This is unneeded because non-Swift/xib/nib files are ignored, but you get the idea.)
-\.build/.*\.pdf
+# e.g. This ignores all `.swift` files in the `.build` directory.
+\.build/.*\.swift

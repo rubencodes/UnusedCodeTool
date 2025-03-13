@@ -19,7 +19,7 @@ extension Regex {
     /// Matches declarations, e.g. `var foo = "bar"`
     /// Captures the variable type (var) and variable name (foo).
     static var declaration: Regex<(Substring, variableType: Substring, variableName: Substring)> {
-        #/(?<variableType>func|let|var|class|enum|struct|protocol)\s+(?<variableName>\w+)/#
+        #/^.*[\s\t\n]*(?<variableType>func|let|var|class|enum|struct|protocol)\s+(?<variableName>\w+)/#
     }
 
     /// Matches classes in xib files, e.g. `<xml class="foo"></xml>`
@@ -40,10 +40,10 @@ extension Regex {
         #/property="(?<propertyName>\w+)"/#
     }
 
-    /// Matches command line arguments, e.g. `--foo=bar`
-    /// Captures the argument name (foo) and the argument value (bar).
-    static var argument: Regex<(Substring, argumentName: Substring, argumentValue: Substring)> {
-        #/-?-?(?<argumentName>\w+)=\"?(?<argumentValue>.+)\"?/#
+    /// Matches command line arguments, e.g. `--foo=bar` or `--foo`
+    /// Captures the argument name (foo) and the optional argument value (bar).
+    static var argument: Regex<(Substring, argumentName: Substring, argumentValue: Substring?)> {
+        #/-?-?(?<argumentName>\w+)(?:=\"?(?<argumentValue>.+\"?)|\s*$|\s*)/#
     }
 
     /// Matches regex literals, e.g. `#/(.*)/#`

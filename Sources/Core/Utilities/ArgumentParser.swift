@@ -11,7 +11,7 @@ enum ArgumentParser {
         for argument in arguments {
             guard let match = argument.wholeMatch(of: Regex<Any>.argument) else { continue }
             guard match.output.argumentName == name else { continue }
-            return "\(match.output.argumentValue)"
+            return "\(match.output.argumentValue ?? "")"
         }
 
         return nil

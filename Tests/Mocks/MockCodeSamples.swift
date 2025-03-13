@@ -7,7 +7,7 @@ extension String {
 
         final class Foo: Bat {
             struct Quz {
-                func baz() {}
+                @IBAction func baz() {}
             }
 
             var bar = "baz"
@@ -36,6 +36,106 @@ extension String {
                 print(bar)
             }
         }
+        """
+    }
+    static var oneUnusedItemWithPrivateClass: String {
+        """
+        protocol Bat {}
+
+        private final class Foo: Bat {
+            struct Quz {
+                @IBAction func baz() {}
+            }
+
+            var bar = "baz"
+
+            init() {
+                Quz().baz()
+                print(bar)
+            }
+        }
+        """
+    }
+
+    static var oneUnusedItemWithPrivateIBAction: String {
+        """
+        protocol Bat {}
+
+        final class Foo: Bat {
+            struct Quz {
+                @IBAction private func baz() {}
+            }
+
+            @IBOutlet var bar = "baz"
+
+            init() {
+                Quz()
+                print(bar)
+            }
+        }
+        
+        Foo()
+        """
+    }
+
+    static var oneUnusedItemWithIBAction: String {
+        """
+        protocol Bat {}
+
+        final class Foo: Bat {
+            struct Quz {
+                @IBAction func baz() {}
+            }
+
+            @IBOutlet var bar = "baz"
+
+            init() {
+                Quz()
+                print(bar)
+            }
+        }
+        
+        Foo()
+        """
+    }
+
+    static var oneUnusedItemWithPrivateIBOutlet: String {
+        """
+        protocol Bat {}
+
+        final class Foo: Bat {
+            struct Quz {
+                @IBAction func baz() {}
+            }
+
+            @IBOutlet private var bar = "baz"
+
+            init() {
+                Quz().baz()
+            }
+        }
+        
+        Foo()
+        """
+    }
+
+    static var oneUnusedItemWithIBOutlet: String {
+        """
+        protocol Bat {}
+
+        final class Foo: Bat {
+            struct Quz {
+                @IBAction func baz() {}
+            }
+
+            @IBOutlet var bar = "baz"
+
+            init() {
+                Quz().baz()
+            }
+        }
+        
+        Foo()
         """
     }
 
@@ -115,6 +215,14 @@ extension String {
         """
     }
 
+    static var unusedIgnoreFileTwoItems: String {
+        """
+        # An example unused ignore file.
+        \(Substring.ignoreFileLiteralDeclarationRegex)
+        \(Substring.ignoreFileRegex)
+        """
+    }
+
     static var xibFileWithClassReference: String {
         """
         <object class="Foo"/>
@@ -123,13 +231,13 @@ extension String {
 
     static var xibFileWithSelectorReference: String {
         """
-        <object selector="Foo"/>
+        <object selector="baz"/>
         """
     }
 
     static var xibFileWithPropertyReference: String {
         """
-        <object property="Foo"/>
+        <object property="bar"/>
         """
     }
 }
@@ -144,7 +252,7 @@ extension Substring {
     }
 
     static var ignoreFileLiteralDeclarationLiteral: Substring {
-        "\"foo.swift\": \"Bat\""
+        "\"foo.swift\": \"Foo\""
     }
 
     static var ignoreFileLiteralDeclarationRegex: Substring {

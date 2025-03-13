@@ -146,9 +146,28 @@ struct UsageAnalyzerTests {
     }
 
     /// Declarations matched inside a xib file should count as usages.
+    @Test func testUsageAnalyzerFindsNoUnusedItemsWithPrivateXibClassReference() async throws {
+        let swiftFiles: [File] = [
+            .init(path: "foo.swift", content: .oneUnusedItemWithPrivateClass),
+        ]
+        let xibFiles: [File] = [
+            .init(path: "foo.xib", content: .xibFileWithClassReference),
+        ]
+
+        let parser = SwiftParser(logger: logger)
+        let declarations = parser.extractDeclarations(in: swiftFiles,
+                                                      ignoringItems: [])
+        let analyzer = UsageAnalyzer(logger: logger)
+        let unused = analyzer.findUnused(declarations: declarations,
+                                         in: swiftFiles,
+                                         xibs: xibFiles)
+        #expect(unused.count == 0)
+    }
+
+    /// Declarations matched inside a xib file should count as usages.
     @Test func testUsageAnalyzerFindsNoUnusedItemsWithXibSelectorReference() async throws {
         let swiftFiles: [File] = [
-            .init(path: "foo.swift", content: .oneUnusedItem),
+            .init(path: "foo.swift", content: .oneUnusedItemWithIBAction),
         ]
         let xibFiles: [File] = [
             .init(path: "foo.xib", content: .xibFileWithSelectorReference),
@@ -165,9 +184,28 @@ struct UsageAnalyzerTests {
     }
 
     /// Declarations matched inside a xib file should count as usages.
+    @Test func testUsageAnalyzerFindsNoUnusedItemsWithPrivateXibSelectorReference() async throws {
+        let swiftFiles: [File] = [
+            .init(path: "foo.swift", content: .oneUnusedItemWithPrivateIBAction),
+        ]
+        let xibFiles: [File] = [
+            .init(path: "foo.xib", content: .xibFileWithSelectorReference),
+        ]
+
+        let parser = SwiftParser(logger: logger)
+        let declarations = parser.extractDeclarations(in: swiftFiles,
+                                                      ignoringItems: [])
+        let analyzer = UsageAnalyzer(logger: logger)
+        let unused = analyzer.findUnused(declarations: declarations,
+                                         in: swiftFiles,
+                                         xibs: xibFiles)
+        #expect(unused == [])
+    }
+
+    /// Declarations matched inside a xib file should count as usages.
     @Test func testUsageAnalyzerFindsNoUnusedItemsWithXibPropertyReference() async throws {
         let swiftFiles: [File] = [
-            .init(path: "foo.swift", content: .oneUnusedItem),
+            .init(path: "foo.swift", content: .oneUnusedItemWithIBOutlet),
         ]
         let xibFiles: [File] = [
             .init(path: "foo.xib", content: .xibFileWithPropertyReference),
@@ -180,6 +218,25 @@ struct UsageAnalyzerTests {
         let unused = analyzer.findUnused(declarations: declarations,
                                          in: swiftFiles,
                                          xibs: xibFiles)
-        #expect(unused.count == 0)
+        #expect(unused == [])
+    }
+
+    /// Declarations matched inside a xib file should count as usages.
+    @Test func testUsageAnalyzerFindsNoUnusedItemsWithPrivateXibPropertyReference() async throws {
+        let swiftFiles: [File] = [
+            .init(path: "foo.swift", content: .oneUnusedItemWithPrivateIBOutlet),
+        ]
+        let xibFiles: [File] = [
+            .init(path: "foo.xib", content: .xibFileWithPropertyReference),
+        ]
+
+        let parser = SwiftParser(logger: logger)
+        let declarations = parser.extractDeclarations(in: swiftFiles,
+                                                      ignoringItems: [])
+        let analyzer = UsageAnalyzer(logger: logger)
+        let unused = analyzer.findUnused(declarations: declarations,
+                                         in: swiftFiles,
+                                         xibs: xibFiles)
+        #expect(unused == [])
     }
 }

@@ -4,15 +4,18 @@ import Foundation
 struct MockFileBrowser: FileBrowser {
     // MARK: - Internal Properties
 
-    let filePaths: [String]
+    var filePaths: [String]?
 
     // MARK: - Public Functions
 
     func getFilePaths(in _: String,
-                      matchingExtension fileExtension: String?,
-                      ignoringItems _: [IgnoredItem]) -> [String]
+                      matchingExtension fileExtension: String,
+                      ignoringItems _: [IgnoredItem]) throws -> [String]
     {
-        filePaths
-            .filter { $0.hasSuffix(fileExtension ?? "") }
+        guard let filePaths else {
+            throw NSError()
+        }
+        return filePaths
+            .filter { $0.hasSuffix(fileExtension) }
     }
 }
