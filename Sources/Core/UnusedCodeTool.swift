@@ -81,10 +81,24 @@ public final class UnusedCodeTool {
             return 0
         }
 
+        let swiftFiles: [File] = swiftFilePaths.compactMap {
+            guard let content = fileReader.readFile(at: $0) else { return nil }
+            return File(path: $0, content: content)
+        }
+
+        let xibFiles: [File] = xibFilePaths.compactMap {
+            guard let content = fileReader.readFile(at: $0) else { return nil }
+            return File(path: $0, content: content)
+        }
+
+        let nibFiles: [File] = nibFilePaths.compactMap {
+            guard let content = fileReader.readFile(at: $0) else { return nil }
+            return File(path: $0, content: content)
+        }
+
         // Search for declarations within the Swift files.
-        let allDeclarations = parser.extractDeclarations(in: swiftFilePaths,
-                                                         ignoringItems: ignoredItems,
-                                                         using: fileReader)
+        let allDeclarations = parser.extractDeclarations(in: swiftFiles,
+                                                         ignoringItems: ignoredItems)
 
         // Warn if any ignore items are unused:
         let unusedIgnoreItems = ignoredItems.filter { $0.hasFiltered == false }
@@ -98,9 +112,8 @@ public final class UnusedCodeTool {
 
         // Find unused declarations.
         let unusedDeclarations = analyzer.findUnused(declarations: allDeclarations,
-                                                     in: swiftFilePaths,
-                                                     xibs: xibFilePaths + nibFilePaths,
-                                                     using: fileReader)
+                                                     in: swiftFiles,
+                                                     xibs: xibFiles + nibFiles)
 
         // Output usage report.
         return reporter.print(for: unusedDeclarations)

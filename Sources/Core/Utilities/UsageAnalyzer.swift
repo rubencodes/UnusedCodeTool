@@ -17,39 +17,27 @@ struct UsageAnalyzer {
     /// Finds unused code items.
     /// - Parameters:
     ///   - items: A list of parsed code items.
-    ///   - filePaths: Paths of all Swift files in the project.
-    ///   - xibs: Paths of all XIB files in the project.
-    ///   - fileReader: The file reader used to read file contents.
+    ///   - files: All Swift files in the project.
+    ///   - xibs: All XIB files in the project.
     /// - Returns: A list of unused code items.
     func findUnused(declarations: [Declaration],
-                    in filePaths: [String],
-                    xibs: [String],
-                    using fileReader: FileReader) -> [Declaration]
+                    in files: [File],
+                    xibs: [File]) -> [Declaration]
     {
         var usages = [Declaration: Int]()
 
-        for filePath in filePaths {
-            guard let content = fileReader.readFile(at: filePath) else {
-                logger.warning("[UsageAnalyzer] Failed to read contents of file: \(filePath)")
-                continue
-            }
-
-            let words = content.sanitized
+        for file in files {
+            let words = file.content.sanitized
                 .components(separatedBy: CharacterSet.validVariableNameCharacters.inverted)
             let wordCount = Dictionary(words.map { ($0, 1) }, uniquingKeysWith: +)
 
-            for item in declarations where !item.isPrivate || item.file == filePath {
+            for item in declarations where !item.isPrivate || item.file == file.path {
                 usages[item] = (usages[item] ?? 0) + (wordCount[item.name] ?? 0)
             }
         }
 
-        for filePath in xibs {
-            guard let content = fileReader.readFile(at: filePath) else {
-                logger.warning("[UsageAnalyzer] Failed to read contents of file: \(filePath)")
-                continue
-            }
-
-            let xmlString = content.split(separator: "\n").joined(separator: " ")
+        for file in xibs {
+            let xmlString = file.content.split(separator: "\n").joined(separator: " ")
 
             // Find class links.
             let classRegex: Regex = .xibClass

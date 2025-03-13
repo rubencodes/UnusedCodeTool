@@ -17,22 +17,19 @@ struct SwiftParser {
     /// Extracts code items from a Swift file's content.
     /// - Parameters:
     ///   - content: The content of the file.
-    ///   - filePaths: Paths of all Swift files in the project.
-    ///   - fileReader: The file reader used to read file contents.
+    ///   - files: All Swift files in the project.
     /// - Returns: A list of identified code items.
-    func extractDeclarations(in filePaths: [String],
-                             ignoringItems ignoredItems: [IgnoredItem],
-                             using fileReader: FileReader) -> [Declaration]
+    func extractDeclarations(in files: [File],
+                             ignoringItems ignoredItems: [IgnoredItem]) -> [Declaration]
     {
-        filePaths.compactMap { filePath -> [Declaration] in
+        files.compactMap { file -> [Declaration] in
             // If the entire file is ignored, return nothing.
-            if ignoredItems.contains(where: { $0.matches(filePath: filePath) && !$0.hasDeclarationFilter }) {
-                logger.debug("[SwiftParser] Skipping file: \(filePath) due to ignore rule.")
+            if ignoredItems.contains(where: { $0.matches(filePath: file.path) && !$0.hasDeclarationFilter }) {
+                logger.debug("[SwiftParser] Skipping file: \(file.path) due to ignore rule.")
                 return []
             }
 
-            guard let contents = fileReader.readFile(at: filePath) else { return [] }
-            return extractDeclarations(from: contents, in: filePath, ignoringItems: ignoredItems)
+            return extractDeclarations(from: file.content, in: file.path, ignoringItems: ignoredItems)
         }.flatMap { $0 }
     }
 
