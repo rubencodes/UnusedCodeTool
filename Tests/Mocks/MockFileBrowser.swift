@@ -8,9 +8,10 @@ struct MockFileBrowser: FileBrowser {
 
     // MARK: - Public Functions
 
-    func getFilePaths(in directory: String,
+    func getFilePaths(in _: String,
                       matchingExtension fileExtension: String?,
-                      ignoringItems ignoredItems: [IgnoredItem]) -> [String] {
+                      ignoringItems _: [IgnoredItem]) -> [String]
+    {
         filePaths
             .filter { $0.hasSuffix(fileExtension ?? "") }
     }

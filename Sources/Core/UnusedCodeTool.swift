@@ -63,14 +63,19 @@ public final class UnusedCodeTool {
     // MARK: - Internal Functions
 
     func run(fileReader: FileReader,
-             fileBrowser: FileBrowser) -> Int {
+             fileBrowser: FileBrowser) -> Int
+    {
         // Create ignored items list.
         let ignoredItems = [IgnoredItem](from: ignoreFilePath, using: fileReader, logger: logger)
 
         // Find all Swift files.
-        let swiftFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "swift", ignoringItems: ignoredItems)
-        let xibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "xib", ignoringItems: ignoredItems)
-        let nibFilePaths = fileBrowser.getFilePaths(in: directory, matchingExtension: "nib", ignoringItems: ignoredItems)
+        guard let swiftFilePaths = try? fileBrowser.getFilePaths(in: directory, matchingExtension: "swift", ignoringItems: ignoredItems),
+              let xibFilePaths = try? fileBrowser.getFilePaths(in: directory, matchingExtension: "xib", ignoringItems: ignoredItems),
+              let nibFilePaths = try? fileBrowser.getFilePaths(in: directory, matchingExtension: "nib", ignoringItems: ignoredItems)
+        else {
+            exit(1)
+        }
+
         guard swiftFilePaths.isEmpty == false else {
             logger.debug("[System] No Swift files found.")
             return 0

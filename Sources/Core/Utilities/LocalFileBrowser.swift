@@ -4,12 +4,12 @@ import Foundation
 struct LocalFileBrowser: FileBrowser {
     // MARK: - Private Properties
 
-    private let fileManager: FileManager
+    private let fileManager: FileManaging
     private let logger: Logger
 
     // MARK: - Lifecycle
 
-    init(using fileManager: FileManager = .default,
+    init(using fileManager: FileManaging = FileManager.default,
          logger: Logger)
     {
         self.fileManager = fileManager
@@ -26,13 +26,13 @@ struct LocalFileBrowser: FileBrowser {
     /// - Returns: A list of matched file paths.
     func getFilePaths(in directory: String = ".",
                       matchingExtension fileExtension: String? = nil,
-                      ignoringItems ignoredItems: [IgnoredItem] = []) -> [String]
+                      ignoringItems ignoredItems: [IgnoredItem] = []) throws -> [String]
     {
-        guard let enumerator = fileManager.enumerator(atPath: directory) else {
+        guard let rawFilePaths = fileManager.files(atPath: directory) else {
             logger.error("[LocalFileBrowser] Failed to enumerate items in directory \"\(directory)\"")
-            exit(1)
+            throw ApplicationError.fileReadError
         }
-        let filePaths = enumerator.allObjects.compactMap { $0 as? String }.map { "\(directory)\(directory.hasSuffix("/") ? "" : "/")\($0)" }
+        let filePaths = rawFilePaths.map { "\(directory)\(directory.hasSuffix("/") ? "" : "/")\($0)" }
         logger.debug("[LocalFileBrowser] File Path Count - All: \(filePaths.count)")
         let filePathsMatchingExtension = filter(filePaths: filePaths, matchingExtension: fileExtension)
         logger.debug("[LocalFileBrowser] File Path Count - Matching Extension (\(fileExtension ?? "none")): \(filePathsMatchingExtension.count)")
