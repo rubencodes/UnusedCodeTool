@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "UnusedCodeTool",
-    platforms: [.macOS(.v15)],
+    platforms: [.macOS(.v14)],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-testing.git", branch: "main"),
     ],
