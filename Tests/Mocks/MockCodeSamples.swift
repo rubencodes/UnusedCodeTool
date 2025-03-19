@@ -38,6 +38,7 @@ extension String {
         }
         """
     }
+
     static var oneUnusedItemWithPrivateClass: String {
         """
         protocol Bat {}
@@ -73,7 +74,7 @@ extension String {
                 print(bar)
             }
         }
-        
+
         Foo()
         """
     }
@@ -94,7 +95,7 @@ extension String {
                 print(bar)
             }
         }
-        
+
         Foo()
         """
     }
@@ -114,7 +115,7 @@ extension String {
                 Quz().baz()
             }
         }
-        
+
         Foo()
         """
     }
@@ -134,7 +135,7 @@ extension String {
                 Quz().baz()
             }
         }
-        
+
         Foo()
         """
     }

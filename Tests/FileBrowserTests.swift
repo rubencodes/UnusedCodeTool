@@ -25,7 +25,7 @@ struct LocalFileBrowserTests {
         let filePaths = [
             "foo.swift",
             "bar.xib",
-            "baz.xib"
+            "baz.xib",
         ]
         let fileManager = MockFileManager(filePaths: filePaths)
         let fileBrowser = LocalFileBrowser(using: fileManager,

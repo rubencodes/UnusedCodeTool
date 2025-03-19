@@ -56,7 +56,8 @@ public final class UnusedCodeTool {
         directory = ArgumentParser.find(Arguments.directory.rawValue, from: arguments) ?? Arguments.directory.defaultValue
         ignoreFilePath = ArgumentParser.find(Arguments.ignoreFilePath.rawValue, from: arguments) ?? Arguments.ignoreFilePath.defaultValue
         logLevel = if let rawValue = ArgumentParser.find(Arguments.logLevel.rawValue, from: arguments),
-                      let logLevel = LogLevel(rawValue: rawValue) {
+                      let logLevel = LogLevel(rawValue: rawValue)
+        {
             logLevel
         } else {
             .default
@@ -80,9 +81,9 @@ public final class UnusedCodeTool {
         guard isHelpRequested == false else {
             logger.info("""
             unused-code-tool
-            
+
             Options:
-            
+
             \(Arguments.allCases.map {
                 "\t--\($0.rawValue) - \($0.description)\n"
             }.joined(separator: "\n"))

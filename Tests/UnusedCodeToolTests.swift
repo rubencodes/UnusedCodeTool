@@ -103,9 +103,9 @@ struct UnusedCodeToolTests {
         let tool = UnusedCodeTool()
         let result = tool.run(fileReader: MockFileReader(files: nil),
                               fileBrowser: MockFileBrowser(filePaths: [
-                                "foo.swift",
-                                "foo.xib",
-                                "foo.nib",
+                                  "foo.swift",
+                                  "foo.xib",
+                                  "foo.nib",
                               ]))
         #expect(result == 0)
     }

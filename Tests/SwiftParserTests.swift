@@ -36,7 +36,8 @@ struct SwiftParserTests {
         #expect(varBar)
 
         let funcBaz = declarations.contains(where: {
-            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction")
+        })
         #expect(funcBaz)
     }
 
@@ -91,7 +92,8 @@ struct SwiftParserTests {
         #expect(varBar)
 
         let funcBaz = declarations.contains(where: {
-            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction")
+        })
         #expect(funcBaz)
     }
 
@@ -122,7 +124,8 @@ struct SwiftParserTests {
         #expect(varBar)
 
         let funcBaz = declarations.contains(where: {
-            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction")
+        })
         #expect(funcBaz)
     }
 
@@ -153,7 +156,8 @@ struct SwiftParserTests {
         #expect(varBar)
 
         let funcBaz = declarations.contains(where: {
-            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction") })
+            $0.name == "baz" && $0.type == "func" && $0.modifiers.contains("@IBAction")
+        })
         #expect(funcBaz)
     }
 
@@ -190,7 +194,8 @@ struct SwiftParserTests {
         #expect(varBar)
 
         let funcBaz = declarations.contains(where: {
-            $0.name == "baz" && $0.type == "func" && $0.isIBLinked })
+            $0.name == "baz" && $0.type == "func" && $0.isIBLinked
+        })
         #expect(funcBaz)
     }
 }
