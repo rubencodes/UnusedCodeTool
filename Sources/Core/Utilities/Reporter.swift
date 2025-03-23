@@ -21,7 +21,7 @@ struct Reporter {
         guard unusedDeclarations.isEmpty else {
             logger.info("[Reporter] Found \(unusedDeclarations.count) unused items:")
             for unusedDeclaration in unusedDeclarations.sorted() {
-                logger.error("\"\(unusedDeclaration.file)\": \(unusedDeclaration.name)")
+                logger.error("\"\(unusedDeclaration.file)\": \"\(unusedDeclaration.name)\"")
             }
             logger.info("")
             logger.info("[Reporter] If this is a false-positive or expected, please copy/paste the line item above to your unused ignore file.")
