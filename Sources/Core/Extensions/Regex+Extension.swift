@@ -19,7 +19,7 @@ extension Regex {
     /// Matches declarations, e.g. `var foo = "bar"`
     /// Captures the variable type (var) and variable name (foo).
     static var declaration: Regex<(Substring, variableType: Substring, variableName: Substring)> {
-        #/^.*[\s\t\n]*(?<variableType>func|let|var|class|enum|struct|protocol)\s+(?<variableName>\w+)/#
+        #/^.*[\s\t\n]*(?<variableType>func|let|var|class|enum|struct|protocol|case)\s+(?<variableName>\w+)/#
     }
 
     /// Matches classes in xib files, e.g. `<xml class="foo"></xml>`

@@ -193,6 +193,17 @@ extension String {
         """
     }
 
+    static var oneUnusedEnumCase: String {
+        """
+        enum Foo {
+            case bar
+            case baz
+        }
+        
+        print(Foo.bar)
+        """
+    }
+
     static var noUnusedItemWithStringInterpolation: String {
         """
         \(oneUnusedItem)

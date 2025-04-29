@@ -66,6 +66,16 @@ struct UnusedCodeToolTests {
         #expect(result == 1)
     }
 
+    @Test func testUnusedEnumCaseProblem() async throws {
+        let files: [String: String] = [
+            "foo.swift": .oneUnusedEnumCase
+        ]
+        let tool = UnusedCodeTool()
+        let result = tool.run(fileReader: MockFileReader(files: files),
+                              fileBrowser: MockFileBrowser(filePaths: Array(files.keys)))
+        #expect(result == 1)
+    }
+
     /// Finds unused code, ignoring it because of the ignore file.
     @Test func testUnusedCodeNoProblemIfIgnored() async throws {
         let files: [String: String] = [
